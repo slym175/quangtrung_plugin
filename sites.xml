@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FileZilla3 version="3.52.2" platform="windows">
+	<Servers>
+		<Server>
+			<Host>163.44.193.67</Host>
+			<Port>21</Port>
+			<Protocol>0</Protocol>
+			<Type>0</Type>
+			<User>ftp_quangtrung</User>
+			<Pass encoding="base64">ZVc1d1hVSEU4U2N3amJ2S1U4TVc=</Pass>
+			<Logontype>1</Logontype>
+			<PasvMode>MODE_DEFAULT</PasvMode>
+			<EncodingType>Auto</EncodingType>
+			<BypassProxy>0</BypassProxy>
+			<Name>quangtrung</Name>
+			<LocalDir>C:\xampp\htdocs\wordpress_quangtrung</LocalDir>
+			<RemoteDir>1 0</RemoteDir>
+			<SyncBrowsing>1</SyncBrowsing>
+			<DirectoryComparison>0</DirectoryComparison>
+		</Server>
+	</Servers>
+</FileZilla3>
