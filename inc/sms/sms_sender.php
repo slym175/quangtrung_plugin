@@ -6,63 +6,83 @@ if(!class_exists('SMS_Sender')) {
 
         // class instance
         static $instance;
+        // protected $message;
+        // protected $message_type;
+        // protected $id;
 
         // class constructor
         public function __construct()
         {
-        }
-
-        public function sendSMS()
-        {
             # code...
         }
 
-        public function status()
+        public function sendSMS($message)
         {
             # code...
+            return $this->sendSMSResponse(true, 'Gửi tin nhắn thành công', $message);
         }
 
-        public function generateOrderMessage($message, $order_id)
+        private function sendSMSResponse($status = true, $message = '', $data = '')
         {
-            //$order = wc_get_order($order_id);      
+            return array(
+                'status'    => $status,
+                'message'   => $message,
+                'data'      => $data
+            );
+        }
+
+        public function generateMessage($message, $message_type, $id)
+        {
+            $log = new WC_Logger();
+            $order_data = "";
+            $user_data = "";
+            switch($message_type) {
+                case 'user':
+                    $user_data = get_user_by( 'id', $id );
+                    break;
+                case 'order':
+                    $order_data = new WC_Order($id);;
+                    $user_data = get_user_by_email( $order_data->get_billing_email() );
+                    break;
+                default:
+                    $order_data = "";
+                    $user_data = "";
+            }
+
+            $products_data = "";
+            if($order_data != "") {
+                //$order_items = $order_data->get_items( apply_filters( 'woocommerce_purchase_order_item_types', 'line_item' ) );
+                foreach ( $order_data->get_items() as $item_id => $item ) {
+                    $name = $item->get_name();
+                    $quantity = $item->get_quantity();
+                    $products_data = $name . " " . $quantity . __('product', 'woocommerce') . ($item == end($order_data->get_items()) ? '' : ',');
+                }
+            }
+
             $data = array(
-                'customer_id'       => '1',
-                'customer_name'     => 'thuyluong', 
-                'username'          => 'thuyluong_user', 
-                'password'          => 'thuyluong_pass', 
-                'site_name'         => 'QuangTrung', 
-                'site_url'          => 'localhost', 
-                'email'             => 'thuyhu9876@gmail.com', 
-                'phone'             => '0986114671', 
-                'order_code'        => '932f23', 
-                'order_products'    => 'Sanpham1, Sanpham2', 
-                'order_summary'     => '400.000vnd', 
-                'order_status'      => 'Dang xu ly'
+                'customer_id'       => $user_data != "" ? $user_data->ID : 0,
+                'customer_name'     => $user_data != "" ? ($user_data->last_name ? $user_data->last_name : $order_data->get_billing_last_name()) : '', 
+                'username'          => $user_data != "" ? $user_data->user_login : '', 
+                'password'          => $user_data != "" ? $user_data->user_pass : '', 
+                'site_name'         => get_bloginfo('name'), 
+                'site_url'          => get_bloginfo('url'), 
+                'email'             => $user_data != "" ? $user_data->user_email : '', 
+                'phone'             => $user_data != "" ? get_user_meta($user_data->ID, 'billing_phone', true) : '', 
+                'order_code'        => $order_data != "" ? $id : 0, 
+                'order_products'    => $products_data, 
+                'order_summary'     => $order_data != "" ? $order_data->get_total() : '', 
+                'order_status'      => $order_data != "" ? $order_data->get_status() : ''
             );
 
             foreach($data as $key => $value) {
                 $message = preg_replace('/{'.$key.'}/i', $value, $message);
             }
+            
             return $message;
 
             // Usage
             // $sms = new SMS_Sender();
             // echo $sms->generateOrderMessage(get_option('qt_options')['sms_create_order_pattern'], $order_id);
-        }
-
-        public function generateUserMessage($message, $user_id)
-        {
-            $user = get_user_by('id', $user_id); 
-            $data = array(
-                'customer_id'   => '',
-                'customer_name' => '',
-                'username'      => '',
-                'password'      => '',
-                'site_name'     => '',
-                'site_url'      => '',
-                'email'         => '',
-                'phone'         => ''
-            );
         }
 
         /** Singleton instance */

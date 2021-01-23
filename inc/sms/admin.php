@@ -51,7 +51,7 @@ if(!class_exists("GsSettingsPage")) {
             </div>
             <script>
                 jQuery(document).ready(function () {
-                    jQuery('#enable_create_user, #enable_sms_create_user, #enable_sms_create_order, #enable_sms_success_order').change(function (e) { 
+                    jQuery('#enable_create_user, #enable_sms_create_user, #enable_sms_create_order, #enable_sms_completed_order, #enable_sms_qt_staffs').change(function (e) { 
                         e.preventDefault();
                         if(jQuery(this).prop('checked')) {
                             jQuery(this).val('on')
@@ -95,9 +95,49 @@ if(!class_exists("GsSettingsPage")) {
                     'type'          => 'checkbox', // Field Type
                     'subtype'       => 'single', // Field Subtype
                     'name'          => 'enable_create_user', // Field Name
-                    'description'   => __('Bật/tắt tự động tạo tài khoản khách hàng sau khi mua hàng (chưa có tài khoản).', GS_TEXTDOMAIN),
+                    'description'   => __('Bật/tắt tự động tạo tài khoản khách hàng sau khi mua hàng (chưa có tài khoản).', QUANGTRUNG_TEXTDOMAIN),
                     'options'       => array(
                         
+                    )
+                ) // Callback Arguments          
+            );
+
+            add_settings_field(
+                'enable_sms_qt_staffs', // ID
+                'Gửi SMS', // Title 
+                array( $this, 'gs_render_settings_field' ), // Callback
+                'qt-settings', // Page
+                'gt_customer_setting_section', // Section 
+                array (
+                    'parent'        => 'qt_options', // Option name
+                    'id'            => 'enable_sms_qt_staffs', // Field ID
+                    'class'         => 'regular-text one-line', // Field ID
+                    'type'          => 'checkbox', // Field Type
+                    'subtype'       => 'single', // Field Subtype
+                    'name'          => 'enable_sms_qt_staffs', // Field Name
+                    'description'   => __('Bật/tắt gửi sms cho nhân viên chắm sóc khách hàng.', QUANGTRUNG_TEXTDOMAIN),
+                    'options'       => array(
+                        
+                    )
+                ) // Callback Arguments          
+            );
+
+            add_settings_field(
+                'qt_staff_number', // ID
+                'Số điện thoại', // Title 
+                array( $this, 'gs_render_settings_field' ), // Callback
+                'qt-settings', // Page
+                'gt_customer_setting_section', // Section 
+                array (
+                    'parent'        => 'qt_options', // Option name
+                    'id'            => 'qt_staff_number', // Field ID
+                    'class'         => 'regular-text one-line', // Field ID
+                    'type'          => 'textarea', // Field Type
+                    'subtype'       => 'text', // Field Subtype
+                    'name'          => 'qt_staff_number', // Field Name
+                    'description'   => __('Số điện thoại của nhân viên chăm sóc khách hàng. Vd: 0987654321, 0123456789', QUANGTRUNG_TEXTDOMAIN),
+                    'options'       => array(
+                        'rows'      => 3,
                     )
                 ) // Callback Arguments          
             );
@@ -122,7 +162,7 @@ if(!class_exists("GsSettingsPage")) {
                     'type'          => 'checkbox', // Field Type
                     'subtype'       => 'single', // Field Subtype
                     'name'          => 'enable_sms_create_user', // Field Name
-                    'description'   => __('Bật/tăt gửi tin nhắn khi tạo tài khoản khách hàng.', GS_TEXTDOMAIN),
+                    'description'   => __('Bật/tăt gửi tin nhắn khi tạo tài khoản khách hàng.', QUANGTRUNG_TEXTDOMAIN),
                     'options'       => array(
                         
                     )
@@ -142,7 +182,7 @@ if(!class_exists("GsSettingsPage")) {
                     'type'          => 'textarea', // Field Type
                     'subtype'       => 'text', // Field Subtype
                     'name'          => 'sms_create_user_pattern', // Field Name
-                    'description'   => __('Nội dung tin nhắn gửi đi: {customer_id}, {customer_name}, {username}, {password}, {site_name}, {site_url}, {email}, {phone}.', GS_TEXTDOMAIN),
+                    'description'   => __('Nội dung tin nhắn gửi đi: {customer_id}, {customer_name}, {username}, {password}, {site_name}, {site_url}, {email}, {phone}.', QUANGTRUNG_TEXTDOMAIN),
                     'options'       => array(
                         'rows'      => 3,
                     )
@@ -162,7 +202,7 @@ if(!class_exists("GsSettingsPage")) {
                     'type'          => 'checkbox', // Field Type
                     'subtype'       => 'single', // Field Subtype
                     'name'          => 'enable_sms_create_order', // Field Name
-                    'description'   => __('Bật/tăt gửi tin nhắn khi khách hàng mua hàng tại website.', GS_TEXTDOMAIN),
+                    'description'   => __('Bật/tăt gửi tin nhắn khi khách hàng mua hàng tại website.', QUANGTRUNG_TEXTDOMAIN),
                     'options'       => array(
                         
                     )
@@ -182,7 +222,7 @@ if(!class_exists("GsSettingsPage")) {
                     'type'          => 'textarea', // Field Type
                     'subtype'       => 'text', // Field Subtype
                     'name'          => 'sms_create_order_pattern', // Field Name
-                    'description'   => __('Nội dung tin nhắn gửi đi: {customer_id}, {customer_name}, {username}, {password}, {site_name}, {site_url}, {email}, {phone}, {order_code}, {order_products}, {order_summary}, {order_status}', GS_TEXTDOMAIN),
+                    'description'   => __('Nội dung tin nhắn gửi đi: {customer_id}, {customer_name}, {username}, {password}, {site_name}, {site_url}, {email}, {phone}, {order_code}, {order_products}, {order_summary}, {order_status}', QUANGTRUNG_TEXTDOMAIN),
                     'options'       => array(
                         'rows'      => 3,
                     )
@@ -190,19 +230,19 @@ if(!class_exists("GsSettingsPage")) {
             );
 
             add_settings_field(
-                'enable_sms_success_order', // ID
+                'enable_sms_completed_order', // ID
                 'Đơn hàng thành công', // Title 
                 array( $this, 'gs_render_settings_field' ), // Callback
                 'qt-settings', // Page
                 'gt_sms_setting_section', // Section 
                 array (
                     'parent'        => 'qt_options', // Option name
-                    'id'            => 'enable_sms_success_order', // Field ID
+                    'id'            => 'enable_sms_completed_order', // Field ID
                     'class'         => 'regular-text one-line', // Field ID
                     'type'          => 'checkbox', // Field Type
                     'subtype'       => 'single', // Field Subtype
-                    'name'          => 'enable_sms_success_order', // Field Name
-                    'description'   => __('Bật tăt gửi tin nhắn khi đơn hàng thành công.', GS_TEXTDOMAIN),
+                    'name'          => 'enable_sms_completed_order', // Field Name
+                    'description'   => __('Bật tăt gửi tin nhắn khi đơn hàng thành công.', QUANGTRUNG_TEXTDOMAIN),
                     'options'       => array(
                         
                     )
@@ -210,19 +250,19 @@ if(!class_exists("GsSettingsPage")) {
             );
 
             add_settings_field(
-                'sms_success_order_pattern', // ID
+                'sms_completed_order_pattern', // ID
                 'Nội dung tin nhắn đơn hàng thành công', // Title 
                 array( $this, 'gs_render_settings_field' ), // Callback
                 'qt-settings', // Page
                 'gt_sms_setting_section', // Section 
                 array (
                     'parent'        => 'qt_options', // Option name
-                    'id'            => 'sms_success_order_pattern', // Field ID
+                    'id'            => 'sms_completed_order_pattern', // Field ID
                     'class'         => 'regular-text one-line', // Field ID
                     'type'          => 'textarea', // Field Type
                     'subtype'       => 'text', // Field Subtype
-                    'name'          => 'sms_success_order_pattern', // Field Name
-                    'description'   => __('Nội dung tin nhắn gửi đi: {customer_id}, {customer_name}, {username}, {password}, {site_name}, {site_url}, {email}, {phone}, {order_code}, {order_products}, {order_summary}, {order_status}', GS_TEXTDOMAIN),
+                    'name'          => 'sms_completed_order_pattern', // Field Name
+                    'description'   => __('Nội dung tin nhắn gửi đi: {customer_id}, {customer_name}, {username}, {password}, {site_name}, {site_url}, {email}, {phone}, {order_code}, {order_products}, {order_summary}, {order_status}', QUANGTRUNG_TEXTDOMAIN),
                     'options'       => array(
                         'rows'      => 3,
                     )

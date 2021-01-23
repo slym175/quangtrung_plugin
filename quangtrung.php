@@ -29,11 +29,11 @@ include_once dirname(NS_PLUGIN_FILE) . '/inc/filter-product-price-widget.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/news-detail-widget.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/baohanh.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/hoidap.php';
-include_once dirname(NS_PLUGIN_FILE) . '/inc/online_user.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/weight_shipping_calculate.php';
-include_once dirname(NS_PLUGIN_FILE) . '/inc/sms/admin.php';
-include_once dirname(NS_PLUGIN_FILE) . '/inc/sms/sms_sender.php';
-include_once dirname(NS_PLUGIN_FILE) . '/inc/sms/create_account.php';
+
+// SMS
+include_once dirname(NS_PLUGIN_FILE) . '/inc/sms/index.php';
+
 //include_once dirname(NS_PLUGIN_FILE) . '/inc/add_box_meta/detail_product.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/add_box_meta/repeatable-fields-metabox.php';
 

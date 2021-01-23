@@ -1,33 +1,8 @@
 <?php 
-// define the woocommerce_new_order callback 
-function action_woocommerce_new_order( $order_get_id ) { 
-    $order = wc_get_order($order_get_id);
-    $order_data = array(
-        'billing_email' => $order->get_billing_email(),
-        'billing_phone' => $order->get_billing_phone(),
-    );
-    // $log = new WC_Logger();
-    // $log->log( 'new-woocommerce-log-name', print_r( $order_data, true ) );
-
-    $user_created = wc_create_new_customer($order_data['billing_email'], '', '', $order_data['billing_phone']);
-    if($user_created) {
-        if($user_created['data'] != null) {
-            // Do send sms action
-            
-        }else{
-            // Display errors
-        }
-    }
-}; 
-         
-// add the action 
-add_action( 'woocommerce_new_order', 'action_woocommerce_new_order', 10, 1 ); 
-
-
 //-----------------------------------------------------
 // Create new user
 //-----------------------------------------------------
-function wc_create_new_customer( $email, $username = '', $password = '', $phone ) { 
+function wc_create_new_customer( $email, $username = '', $password = '', $phone , $last_name) { 
  
     // Check the email address. Because this function called after order created => email always filled
     // if ( empty( $email ) || ! is_email( $email ) ) { 
@@ -105,10 +80,11 @@ function wc_create_new_customer( $email, $username = '', $password = '', $phone 
     } 
  
     $new_customer_data = apply_filters( 'woocommerce_new_customer_data', array( 
-        'user_login' => $username,  
-        'user_pass' => $password,  
-        'user_email' => $email,  
-        'role' => 'customer',  
+        'user_login'    => $username,  
+        'user_pass'     => $password,  
+        'user_email'    => $email, 
+        'last_name'     => $last_name, 
+        'role'          => 'customer',  
     ) ); 
  
     $customer_id = wp_insert_user( $new_customer_data ); 
@@ -120,6 +96,7 @@ function wc_create_new_customer( $email, $username = '', $password = '', $phone 
             'data'      => null
         ); 
     } else {
+        update_user_meta( $customer_id, 'billing_phone', sanitize_text_field($phone) );
         update_user_meta( $customer_id, 'billing_phone', sanitize_text_field($phone) );
     }
  
