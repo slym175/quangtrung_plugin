@@ -34,6 +34,9 @@ include_once dirname(NS_PLUGIN_FILE) . '/inc/weight_shipping_calculate.php';
 // SMS
 include_once dirname(NS_PLUGIN_FILE) . '/inc/sms/index.php';
 
+// Online
+include_once dirname(NS_PLUGIN_FILE) . '/inc/online/index.php';
+
 //include_once dirname(NS_PLUGIN_FILE) . '/inc/add_box_meta/detail_product.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/add_box_meta/repeatable-fields-metabox.php';
 
@@ -45,8 +48,20 @@ if (!class_exists('Quangtrung')) {
         protected static $instance;
         public function __construct()
         {
+            global $jal_db_version;
+            if ( get_site_option( 'jal_db_version' ) != $jal_db_version ) {
+                create_baohanh_table();
+                create_hoidap_table();
+                create_user_online_table();
+            }
             add_action( 'wp_enqueue_scripts', 'load_plugins_scripts' );
             add_action( 'admin_enqueue_scripts', 'quangtrung_enqueue' );
+            // register_activation_hook( NS_PLUGIN_FILE, 'create_baohanh_table' );
+            // register_activation_hook( NS_PLUGIN_FILE, 'create_hoidap_table' );
+            // register_activation_hook( NS_PLUGIN_FILE, 'create_user_online_table' );
+            add_action( 'activated_plugin', 'create_baohanh_table', 10, 2 );
+            add_action( 'activated_plugin', 'create_hoidap_table', 10, 2 );
+            add_action( 'activated_plugin', 'create_user_online_table', 10, 2 );
         }
 
         public static function init()
@@ -55,9 +70,6 @@ if (!class_exists('Quangtrung')) {
             return self::$instance;
         }
     }
-
-    register_activation_hook( NS_PLUGIN_FILE, 'create_baohanh_table' );
-    register_activation_hook( NS_PLUGIN_FILE, 'create_hoidap_table' );
 }
 
 function quangtrung_enqueue(){

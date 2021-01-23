@@ -11,7 +11,7 @@ function action_woocommerce_new_order( $order_get_id ) {
     $log = new WC_Logger();
     $sms = new SMS_Sender();
     if(get_option('qt_options')['enable_create_user'] && get_option('qt_options')['enable_create_user'] == "on") {
-        $user_created = wc_create_new_customer($order_data['billing_email'], '', '', $order_data['billing_phone'], $order_data['billing_last_name']);
+        $user_created = wc_create_qt_new_customer($order_data['billing_email'], '', '', $order_data['billing_phone'], $order_data['billing_last_name']);
         if($user_created) {
             $log->log( 'new-woocommerce-log-name', print_r( $user_created, true ) );
             if($user_created['data'] && $user_created['data'] != null) {

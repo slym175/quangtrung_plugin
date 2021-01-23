@@ -2,7 +2,7 @@
 //-----------------------------------------------------
 // Create new user
 //-----------------------------------------------------
-function wc_create_new_customer( $email, $username = '', $password = '', $phone , $last_name) { 
+function wc_create_qt_new_customer( $email, $username = '', $password = '', $phone , $last_name) { 
  
     // Check the email address. Because this function called after order created => email always filled
     // if ( empty( $email ) || ! is_email( $email ) ) { 
