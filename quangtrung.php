@@ -18,6 +18,7 @@ if ( ! defined( 'YITH_WCWL_DIR' ) ) {
     define( 'QUANGTRUNG_DIR', plugin_dir_path( __FILE__ ) );
 }
 
+include_once dirname(NS_PLUGIN_FILE) . '/inc/admin.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/news-widget.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/page-widget.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/form_search_widget.php';
@@ -27,6 +28,7 @@ include_once dirname(NS_PLUGIN_FILE) . '/inc/xem_nhieu_widget.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/filter-product-widget.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/filter-product-price-widget.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/news-detail-widget.php';
+include_once dirname(NS_PLUGIN_FILE) . '/inc/create_table.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/baohanh.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/hoidap.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/weight_shipping_calculate.php';
@@ -35,7 +37,7 @@ include_once dirname(NS_PLUGIN_FILE) . '/inc/weight_shipping_calculate.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/sms/index.php';
 
 // Online
-include_once dirname(NS_PLUGIN_FILE) . '/inc/online/index.php';
+include_once dirname(NS_PLUGIN_FILE) . '/inc/quatang/index.php';
 
 //include_once dirname(NS_PLUGIN_FILE) . '/inc/add_box_meta/detail_product.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/add_box_meta/repeatable-fields-metabox.php';
@@ -48,20 +50,8 @@ if (!class_exists('Quangtrung')) {
         protected static $instance;
         public function __construct()
         {
-            global $jal_db_version;
-            if ( get_site_option( 'jal_db_version' ) != $jal_db_version ) {
-                create_baohanh_table();
-                create_hoidap_table();
-                create_user_online_table();
-            }
             add_action( 'wp_enqueue_scripts', 'load_plugins_scripts' );
             add_action( 'admin_enqueue_scripts', 'quangtrung_enqueue' );
-            // register_activation_hook( NS_PLUGIN_FILE, 'create_baohanh_table' );
-            // register_activation_hook( NS_PLUGIN_FILE, 'create_hoidap_table' );
-            // register_activation_hook( NS_PLUGIN_FILE, 'create_user_online_table' );
-            add_action( 'activated_plugin', 'create_baohanh_table', 10, 2 );
-            add_action( 'activated_plugin', 'create_hoidap_table', 10, 2 );
-            add_action( 'activated_plugin', 'create_user_online_table', 10, 2 );
         }
 
         public static function init()

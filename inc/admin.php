@@ -40,6 +40,8 @@ if(!class_exists("GsSettingsPage")) {
             $this->options = get_option( 'qt_options' );
             ?>
             <div class="wrap">
+                <?php echo "Admin is ". (is_wp_user_online(get_current_user_id(  )) ? 'online' : 'offline') ?>
+                <?php echo "<pre>"; print_r(wp_get_users_online()); echo "</pre>"; ?>
                 <form method="post" action="options.php">
                     <?php
                         // This prints out all hidden setting fields
@@ -268,6 +270,101 @@ if(!class_exists("GsSettingsPage")) {
                     )
                 ) // Callback Arguments          
             );
+
+            add_settings_section(
+                'gt_gift_setting_section', // ID
+                'Quà tặng', // Title
+                '', // Callback
+                'qt-settings' // Page
+            );
+
+            add_settings_field(
+                'min_online_time', // ID
+                'Thời gian tối thiểu', // Title 
+                array( $this, 'gs_render_settings_field' ), // Callback
+                'qt-settings', // Page
+                'gt_gift_setting_section', // Section 
+                array (
+                    'parent'        => 'qt_options', // Option name
+                    'id'            => 'min_online_time', // Field ID
+                    'class'         => 'regular-text one-line', // Field ID
+                    'type'          => 'input', // Field Type
+                    'subtype'       => 'number', // Field Subtype
+                    'name'          => 'min_online_time', // Field Name
+                    'description'   => __('Thời gian đăng nhập tối thiểu để đăng nhập được tính là 1 lần. Đơn vị: phút', QUANGTRUNG_TEXTDOMAIN),
+                    'options'       => array(
+                        'min'       => 1,
+                    )
+                ) // Callback Arguments          
+            );
+
+            add_settings_field(
+                'online_times', // ID
+                'Số lần đăng nhập', // Title 
+                array( $this, 'gs_render_settings_field' ), // Callback
+                'qt-settings', // Page
+                'gt_gift_setting_section', // Section 
+                array (
+                    'parent'        => 'qt_options', // Option name
+                    'id'            => 'online_times', // Field ID
+                    'class'         => 'regular-text one-line', // Field ID
+                    'type'          => 'input', // Field Type
+                    'subtype'       => 'number', // Field Subtype
+                    'name'          => 'online_times', // Field Name
+                    'description'   => __('Số lần để được nhận quà', QUANGTRUNG_TEXTDOMAIN),
+                    'options'       => array(
+                        'min'       => 1,
+                    )
+                ) // Callback Arguments          
+            );
+
+            add_settings_field(
+                'daily_online_times', // ID
+                'Lần đăng nhập mỗi ngày', // Title 
+                array( $this, 'gs_render_settings_field' ), // Callback
+                'qt-settings', // Page
+                'gt_gift_setting_section', // Section 
+                array (
+                    'parent'        => 'qt_options', // Option name
+                    'id'            => 'daily_online_times', // Field ID
+                    'class'         => 'regular-text one-line', // Field ID
+                    'type'          => 'input', // Field Type
+                    'subtype'       => 'number', // Field Subtype
+                    'name'          => 'daily_online_times', // Field Name
+                    'description'   => __('Số lần đăng nhập mỗi ngày', QUANGTRUNG_TEXTDOMAIN),
+                    'options'       => array(
+                        'min'       => 1,
+                    )
+                ) // Callback Arguments          
+            );
+
+            add_settings_section(
+                'gt_bh_gift_setting_section', // ID
+                'Quà tặng bảo hành', // Title
+                '', // Callback
+                'qt-settings' // Page
+            );
+
+            add_settings_field(
+                'minimum_bao_hanh_time', // ID
+                'Thời gian nhận quà bảo hành', // Title 
+                array( $this, 'gs_render_settings_field' ), // Callback
+                'qt-settings', // Page
+                'gt_bh_gift_setting_section', // Section 
+                array (
+                    'parent'        => 'qt_options', // Option name
+                    'id'            => 'minimum_bao_hanh_time', // Field ID
+                    'class'         => 'regular-text one-line', // Field ID
+                    'type'          => 'input', // Field Type
+                    'subtype'       => 'number', // Field Subtype
+                    'name'          => 'minimum_bao_hanh_time', // Field Name
+                    'description'   => __('Trong n tháng khách hàng mua hàng không có yêu cầu bảo hành được nhận quà. Đơn vị: tháng', QUANGTRUNG_TEXTDOMAIN),
+                    'options'       => array(
+                        'min'       => 1,
+                    )
+                ) // Callback Arguments          
+            );
+            
         }
 
         /** 

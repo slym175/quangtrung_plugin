@@ -1,18 +1,19 @@
 <?php
-/**
- * Created by trungduc.vnu@gmail.com.
- */
+
+/*
+Plugin Name: WP_List_Table Class Example
+Plugin URI: https://www.sitepoint.com/using-wp_list_table-to-create-wordpress-admin-tables/
+Description: Demo WP_List_Table Class works
+Version: 1.0
+Author: trungduc.vnu@gmail.com
+Author URI:  https://w3guy.com
+*/
 
 if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
-define('GIFT_STATUS', array(
-    'Chưa nhận',
-    'Đã nhận'
-));
-
-class Baohanh_List extends WP_List_Table
+class Gift_List extends WP_List_Table
 {
 
     /** Class constructor */
@@ -20,13 +21,12 @@ class Baohanh_List extends WP_List_Table
     {
 
         parent::__construct([
-            'singular' => __('Baohanh', 'sp'), //singular name of the listed records
-            'plural' => __('Baohanh', 'sp'), //plural name of the listed records
+            'singular' => __('Quatang', 'sp'), //singular name of the listed records
+            'plural' => __('Quatang', 'sp'), //plural name of the listed records
             'ajax' => false //does this table support ajax?
         ]);
 
     }
-
 
     /**
      * Retrieve customers data from the database
@@ -36,31 +36,44 @@ class Baohanh_List extends WP_List_Table
      *
      * @return mixed
      */
-    public static function get_data($per_page = 5, $page_number = 1)
+    public static function get_customers($per_page = 10, $page_number = 1)
     {
-        $s = $_REQUEST['s'];
         global $wpdb;
 
-        $sql = "SELECT * FROM {$wpdb->prefix}baohanh";
+        $sql = "SELECT * FROM {$wpdb->prefix}quatang";
 
+        $s = $_REQUEST['s'];
         if(isset($s) && $s){
-            $sql .= ' where bh_code="'.$s.'"';
+            $sql .= ' where name LIKE "%'.$s.'%"';
         }
 
         if (!empty($_REQUEST['orderby'])) {
             $sql .= ' ORDER BY ' . esc_sql($_REQUEST['orderby']);
             $sql .= !empty($_REQUEST['order']) ? ' ' . esc_sql($_REQUEST['order']) : ' ASC';
+        } else {
+            $sql .= ' ORDER BY created_at DESC';
         }
 
         $sql .= " LIMIT $per_page";
         $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
-
 
         $result = $wpdb->get_results($sql, 'ARRAY_A');
 
         return $result;
     }
 
+    function extra_tablenav( $which ) {
+		$search = @$_POST['s']?esc_attr($_POST['s']):"";
+		if ( $which == "top" ) : ?>
+		<div class="actions">
+			<p class="search-box">
+				<label for="post-search-input" class="screen-reader-text">Search Pages:</label>
+				<input type="search" value="<?php echo $search; ?>" name="s" id="post-search-input">
+				<input type="submit" value="Search" class="button" id="search-submit" name="">
+			</p>
+		</div>
+        <?php endif; 
+	}
 
     /**
      * Delete a customer record.
@@ -72,8 +85,8 @@ class Baohanh_List extends WP_List_Table
         global $wpdb;
 
         $wpdb->delete(
-            "{$wpdb->prefix}customers",
-            ['ID' => $id],
+            "{$wpdb->prefix}quatang",
+            ['id' => $id],
             ['%d']
         );
     }
@@ -88,7 +101,7 @@ class Baohanh_List extends WP_List_Table
     {
         global $wpdb;
 
-        $sql = "SELECT COUNT(*) FROM {$wpdb->prefix}baohanh";
+        $sql = "SELECT COUNT(*) FROM {$wpdb->prefix}quatang";
 
         return $wpdb->get_var($sql);
     }
@@ -97,7 +110,7 @@ class Baohanh_List extends WP_List_Table
     /** Text displayed when no customer data is available */
     public function no_items()
     {
-        _e('No customers avaliable.', 'sp');
+        _e('Không có nội dung hiển thị.', 'sp');
     }
 
 
@@ -112,16 +125,17 @@ class Baohanh_List extends WP_List_Table
     public function column_default($item, $column_name)
     {
         switch ($column_name) {
-            case 'code':
+            case 'name':
+            case 'created_at':
                 return $item[$column_name];
-            case 'order_id':
-                return '#' . $item[$column_name];
-            case 'customer_name':
+            case 'url':
+                return '<a href="' . $item[$column_name] . '" target="_blank">' . $item[$column_name] . '</a>';
+            case 'thumbnail':
+                return '<img src="'.$item[$column_name].'" alt="'.$item['name'].'">';
+            case 'time':
                 return $item[$column_name];
-            case 'phone':
+            case 'status':
                 return $item[$column_name];
-            case 'recieved_gift':
-                return GIFT_STATUS[$item[$column_name]];
             default:
                 return print_r($item, true); //Show the whole array for troubleshooting purposes
         }
@@ -137,7 +151,7 @@ class Baohanh_List extends WP_List_Table
     function column_cb($item)
     {
         return sprintf(
-            '<input type="checkbox" name="bulk-delete[]" value="%s" />', $item['ID']
+            '<input type="checkbox" name="bulk-delete[]" value="%s" />', $item['id']
         );
     }
 
@@ -152,12 +166,13 @@ class Baohanh_List extends WP_List_Table
     function column_name($item)
     {
 
-        $delete_nonce = wp_create_nonce('sp_delete_customer');
+        $delete_nonce = wp_create_nonce('sp_delete_question');
 
         $title = '<strong>' . $item['name'] . '</strong>';
 
         $actions = [
-            'delete' => sprintf('<a href="?page=%s&action=%s&customer=%s&_wpnonce=%s">Delete</a>', esc_attr($_REQUEST['page']), 'delete', absint($item['ID']), $delete_nonce)
+            // 'delete' => sprintf( '<a href="?page=%s&action=%s&ID=%s&_wpnonce=%s">Delete</a>', esc_attr( $_REQUEST['page'] ), 'delete', absint( $item['ID'] ), $delete_nonce ),
+            // 'mark' => sprintf('<a href="?page=%s&action=%s">Đã đọc</a>', $_REQUEST['page'], 'mark_viewed'),
         ];
 
         return $title . $this->row_actions($actions);
@@ -172,11 +187,12 @@ class Baohanh_List extends WP_List_Table
     function get_columns()
     {
         $columns = [
-            'code' => 'Mã bảo hành',
-            'order_id' => 'Mã đơn hàng',
-            'phone' => 'Số điện thoại',
-            'customer_name' => 'Tên khách hàng',
-            'recieved_gift' => 'Quà tặng',
+            'cb'            => '<input type="checkbox" />',
+            'thumbnail'     => '<span class="wc-image tips">Ảnh</span>',
+            'name'          => 'Tên quà tặng',
+            'url'           => 'Đường dẫn',
+            'status'        => 'Trạng thái',
+            'created_at'    => 'Ngày tạo',
         ];
 
         return $columns;
@@ -191,7 +207,8 @@ class Baohanh_List extends WP_List_Table
     public function get_sortable_columns()
     {
         $sortable_columns = array(
-            'phone' => array('phone', true),
+            'name'          => array('name', true),
+            'created_at'    => array('created_at', false),
         );
 
         return $sortable_columns;
@@ -205,7 +222,8 @@ class Baohanh_List extends WP_List_Table
     public function get_bulk_actions()
     {
         $actions = [
-
+//            'bulk-delete' => 'Delete',
+//            'bulk-view' => 'View'
         ];
 
         return $actions;
@@ -223,7 +241,7 @@ class Baohanh_List extends WP_List_Table
         /** Process bulk action */
         $this->process_bulk_action();
 
-        $per_page = $this->get_items_per_page('customers_per_page', 5);
+        $per_page = $this->get_items_per_page('customers_per_page', 10);
         $current_page = $this->get_pagenum();
         $total_items = self::record_count();
 
@@ -232,32 +250,22 @@ class Baohanh_List extends WP_List_Table
             'per_page' => $per_page //WE have to determine how many items to show on a page
         ]);
 
-        $this->items = self::get_data($per_page, $current_page);
-    }
-
-    //Thêm action khi hover vào row
-    function column_code($item)
-    {
-        $actions = array(
-            'view' => sprintf('<a href="?page=%s&action=%s&code=%s">Xem chi tiết</a>', $_REQUEST['page'], 'view', $item['bh_code']),
-            'history' => sprintf('<a href="?page=%s&action=%s&code=%s">Lịch sử bảo hành</a>', $_REQUEST['page'], 'history', $item['bh_code']),
-        );
-
-        return sprintf('%1$s %2$s', $item['bh_code'], $this->row_actions($actions));
+        $this->items = self::get_customers($per_page, $current_page);
     }
 
     public function process_bulk_action()
     {
+
         //Detect when a bulk action is being triggered...
         if ('delete' === $this->current_action()) {
 
             // In our file that handles the request, verify the nonce.
             $nonce = esc_attr($_REQUEST['_wpnonce']);
 
-            if (!wp_verify_nonce($nonce, 'sp_delete_customer')) {
+            if (!wp_verify_nonce($nonce, 'sp_delete_question')) {
                 die('Go get a life script kiddies');
             } else {
-                self::delete_customer(absint($_GET['customer']));
+                self::delete_customer(absint($_GET['question']));
 
                 // esc_url_raw() is used to prevent converting ampersand in url to "#038;"
                 // add_query_arg() return the current url
@@ -290,7 +298,7 @@ class Baohanh_List extends WP_List_Table
 }
 
 
-class SP_Baohanh
+class Gift_Plugin
 {
 
     // class instance
@@ -298,7 +306,6 @@ class SP_Baohanh
 
     // customer WP_List_Table object
     public $customers_obj;
-    public $template_dir = "nt_templates";
 
     // class constructor
     public function __construct()
@@ -317,12 +324,11 @@ class SP_Baohanh
     {
 
         $hook = add_menu_page(
-            'Danh sách bảo hành',
-            'Bảo hành',
+            'Danh sách quà tặng',
+            'Quà tặng',
             'manage_options',
-            'baohanh',
-            [$this, 'plugin_settings_page'],
-            '', 25
+            'qua_tang',
+            [$this, 'plugin_settings_page'], 'dashicons-buddicons-community', 21
         );
 
         add_action("load-$hook", [$this, 'screen_option']);
@@ -335,39 +341,24 @@ class SP_Baohanh
      */
     public function plugin_settings_page()
     {
-        $action = $_REQUEST['action'];
-        if ($action == 'view') {
-            echo tk_get_template('baohanh/view.php', true);
-        } elseif ($action == 'history'){
-            echo tk_get_template('baohanh/history.php', true);
-        }elseif ($action == 'edit'){
-            echo tk_get_template('baohanh/edit.php', true);
-        }elseif ($action == 'create'){
-            echo tk_get_template('baohanh/create.php', true);
-        }else { ?>
-            <div class="wrap">
-                <h1 class="wp-heading-inline">Danh sách bảo hành</h1>
-                <div id="poststuff">
-                    <div id="post-body-content">
-                        <div class="meta-box-sortables ui-sortable">
-                            <form method="get">
-                                <p class="search-box">
-                                    <label class="screen-reader-text" for="search_id-search-input">Tìm kiếm:</label>
-                                    <input type="hidden" id="page" name="page" value="baohanh">
-                                    <input type="search" id="search_id-search-input" name="s" value="">
-                                    <input type="submit" id="search-submit" class="button" value="Tìm kiếm">
-                                </p>
-                            </form>
+        ?>
+        <div class="wrap">
+            <h2>Danh sách quà tặng</h2>
+
+            <div id="poststuff">
+                <div id="post-body-content">
+                    <div class="meta-box-sortables ui-sortable">
+                        <form method="post">
                             <?php
                             $this->customers_obj->prepare_items();
                             $this->customers_obj->display(); ?>
-
-                        </div>
+                        </form>
                     </div>
-                    <br class="clear">
                 </div>
+                <br class="clear">
             </div>
-        <?php }
+        </div>
+        <?php
     }
 
     /**
@@ -378,14 +369,14 @@ class SP_Baohanh
 
         $option = 'per_page';
         $args = [
-            'label' => 'Bảo hành',
-            'default' => 5,
-            'option' => 'customers_per_page'
+            'label'     => 'Quà tặng: ',
+            'default'   => 20,
+            'option'    => 'customers_per_page'
         ];
 
         add_screen_option($option, $args);
 
-        $this->customers_obj = new Baohanh_List();
+        $this->customers_obj = new Gift_List();
     }
 
 
@@ -402,6 +393,6 @@ class SP_Baohanh
 }
 
 
-add_action('plugins_loaded', function () {
-    SP_Baohanh::get_instance();
+add_action('init', function () {
+    Gift_Plugin::get_instance();
 });
