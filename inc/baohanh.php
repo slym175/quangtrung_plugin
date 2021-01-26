@@ -8,8 +8,9 @@ if (!class_exists('WP_List_Table')) {
 }
 
 define('GIFT_STATUS', array(
-    'Chưa nhận',
-    'Đã nhận'
+    '0' => 'Chưa đủ điều kiện',
+    '1' => 'Chưa nhận',
+    '2' => 'Đã nhận'
 ));
 
 class Baohanh_List extends WP_List_Table

@@ -40,8 +40,7 @@ if(!class_exists("GsSettingsPage")) {
             $this->options = get_option( 'qt_options' );
             ?>
             <div class="wrap">
-                <?php echo "Admin is ". (is_wp_user_online(get_current_user_id(  )) ? 'online' : 'offline') ?>
-                <?php echo "<pre>"; print_r(wp_get_users_online()); echo "</pre>"; ?>
+               
                 <form method="post" action="options.php">
                     <?php
                         // This prints out all hidden setting fields

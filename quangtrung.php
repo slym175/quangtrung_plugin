@@ -18,6 +18,7 @@ if ( ! defined( 'YITH_WCWL_DIR' ) ) {
     define( 'QUANGTRUNG_DIR', plugin_dir_path( __FILE__ ) );
 }
 
+include_once dirname(NS_PLUGIN_FILE) . '/inc/ajax.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/admin.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/news-widget.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/page-widget.php';
@@ -36,8 +37,11 @@ include_once dirname(NS_PLUGIN_FILE) . '/inc/weight_shipping_calculate.php';
 // SMS
 include_once dirname(NS_PLUGIN_FILE) . '/inc/sms/index.php';
 
-// Online
+// Qua tang
 include_once dirname(NS_PLUGIN_FILE) . '/inc/quatang/index.php';
+
+// Online
+include_once dirname(NS_PLUGIN_FILE) . '/inc/online/index.php';
 
 //include_once dirname(NS_PLUGIN_FILE) . '/inc/add_box_meta/detail_product.php';
 include_once dirname(NS_PLUGIN_FILE) . '/inc/add_box_meta/repeatable-fields-metabox.php';

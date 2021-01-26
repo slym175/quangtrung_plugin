@@ -45,13 +45,20 @@ function run_qua_bao_hanh_cron() {
         $date2 = new DateTime(date('m/d/Y', $bh->created_at)); $date2->format('m/d/Y');
         $diff = $date1->diff($date2);
         if($diff->m >= $bh_time || $diff->m >= $min_time) {
-            $list_bh[$i] = $bh;
+            $list_bh[$i] = $bh['bh_code'];
             $i++;
         }
     }
 
+    $strr = "(". implode(',', $list_bh) .")";
+
     $log = new WC_Logger();
-    $log->log( 'new-cronjob-name', 'Cronjob every_minute!!!' );
+    $log->log( 'new-cronjob-name', 'Cronjob daily!!!' );
+
+    $update_sql = "UPDATE $table_baohanh SET recieved_gift = 1 WHERE bh_code IN $strr";
+    $baohanh = $wpdb->query( 
+        $wpdb->prepare( $update_sql )
+    );
     // $log->log( 'new-cronjob-name', 'SQL: '. $sql);
     // $log->log( 'new-cronjob-name', print_r($baohanh, true) );
 }
