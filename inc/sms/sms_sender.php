@@ -19,6 +19,7 @@ if(!class_exists('SMS_Sender')) {
         public function sendSMS($message)
         {
             # code...
+            
             return $this->sendSMSResponse(true, 'Gửi tin nhắn thành công', $message);
         }
 
@@ -79,10 +80,6 @@ if(!class_exists('SMS_Sender')) {
             }
             
             return $message;
-
-            // Usage
-            // $sms = new SMS_Sender();
-            // echo $sms->generateOrderMessage(get_option('qt_options')['sms_create_order_pattern'], $order_id);
         }
 
         /** Singleton instance */

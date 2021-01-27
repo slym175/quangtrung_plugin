@@ -6,6 +6,7 @@ if(!class_exists("GsSettingsPage")) {
          * Holds the values to be used in the fields callbacks
          */
         private $options;
+        private $repeater_options;
 
         /**
          * Start up
@@ -38,6 +39,9 @@ if(!class_exists("GsSettingsPage")) {
         {
             // Set class property
             $this->options = get_option( 'qt_options' );
+            echo "<pre>";
+            print_r($this->options);
+            echo "</pre>";
             ?>
             <div class="wrap">
                
@@ -279,7 +283,7 @@ if(!class_exists("GsSettingsPage")) {
 
             add_settings_field(
                 'min_online_time', // ID
-                'Thời gian tối thiểu', // Title 
+                'Đặt lại trạng thái đăng nhập', // Title 
                 array( $this, 'gs_render_settings_field' ), // Callback
                 'qt-settings', // Page
                 'gt_gift_setting_section', // Section 
@@ -290,7 +294,7 @@ if(!class_exists("GsSettingsPage")) {
                     'type'          => 'input', // Field Type
                     'subtype'       => 'number', // Field Subtype
                     'name'          => 'min_online_time', // Field Name
-                    'description'   => __('Thời gian đăng nhập tối thiểu để đăng nhập được tính là 1 lần. Đơn vị: phút', QUANGTRUNG_TEXTDOMAIN),
+                    'description'   => __('Thời gian đặt lại trạng thái đăng nhập. Đơn vị: phút', QUANGTRUNG_TEXTDOMAIN),
                     'options'       => array(
                         'min'       => 1,
                     )
@@ -333,6 +337,26 @@ if(!class_exists("GsSettingsPage")) {
                     'description'   => __('Số lần đăng nhập mỗi ngày', QUANGTRUNG_TEXTDOMAIN),
                     'options'       => array(
                         'min'       => 1,
+                    )
+                ) // Callback Arguments          
+            );
+
+            add_settings_field(
+                'daily_login_time', // ID
+                'Thời gian đăng nhập hàng ngày', // Title 
+                array( $this, 'gs_render_settings_field' ), // Callback
+                'qt-settings', // Page
+                'gt_sms_setting_section', // Section 
+                array (
+                    'parent'        => 'qt_options', // Option name
+                    'id'            => 'daily_login_time', // Field ID
+                    'class'         => 'regular-text one-line', // Field ID
+                    'type'          => 'textarea', // Field Type
+                    'subtype'       => 'text', // Field Subtype
+                    'name'          => 'daily_login_time', // Field Name
+                    'description'   => __('Thời diểm đăng nhập nhận quà trong ngày. VD 8:00-9:00, 11:15-13:30, 18:00-23:00,...', QUANGTRUNG_TEXTDOMAIN),
+                    'options'       => array(
+                        'rows'      => 3,
                     )
                 ) // Callback Arguments          
             );
@@ -466,4 +490,9 @@ if(!class_exists("GsSettingsPage")) {
     }
     
     $settings = new GsSettingsPage();
+}
+
+function get_qt_options($name)
+{
+    return get_option( 'qt_options', 'option' )[$name] ? get_option( 'qt_options', 'option' )[$name] : null;
 }

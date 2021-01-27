@@ -157,3 +157,11 @@ function contactform7_before_send_mail( $form_to_DB ) {
     }    
 }
 add_action( 'wpcf7_before_send_mail', 'contactform7_before_send_mail' );
+
+add_filter("wpdiscuz_custom_field_text", function ($value, $args) {
+    // $value .= print_r($args);
+    if($args['name'] == "Số điện thoại" && !is_admin( )) {
+        $value = substr_replace(trim($value, " "), '***', -3);
+    }
+    return $value;
+}, 10, 2);

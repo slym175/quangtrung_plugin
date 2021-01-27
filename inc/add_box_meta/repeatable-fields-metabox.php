@@ -8,6 +8,7 @@ function hhs_add_meta_boxes()
 {
     add_meta_box('repeatable-fields-gift', 'Quà tặng', 'qt_repeatable_gift_display', 'product', 'normal', 'default');
     add_meta_box('repeatable-fields-promotional', 'Ưu đãi khác', 'qt_repeatable_promotional_display', 'product', 'normal', 'default');
+    // add_meta_box('repeatable-fields-characteristic', 'Đặc tính', 'qt_repeatable_characteristic_display', 'product', 'normal', 'default');
 }
 
 function qt_repeatable_gift_display()
