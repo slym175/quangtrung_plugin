@@ -61,7 +61,7 @@ dbDelta( $sql_baohanh_items );
 // dbDelta( $sql_online_user );
 
 
-// status 0: đang thực hiện, 1: đã hoàn thành, 2: hủy bỏ
+// status 0: Đang thực hiện, 1: Chưa nhận quà, 2: Đã nhận quà
 $table_dangkynhanqua = $wpdb->prefix . 'dangkynhanqua';
 $sql_dangkynhanqua = "CREATE TABLE $table_dangkynhanqua (
 	id mediumint(9) NOT NULL AUTO_INCREMENT,

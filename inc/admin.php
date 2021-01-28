@@ -39,9 +39,9 @@ if(!class_exists("GsSettingsPage")) {
         {
             // Set class property
             $this->options = get_option( 'qt_options' );
-            echo "<pre>";
-            print_r($this->options);
-            echo "</pre>";
+            // echo "<pre>";
+            // print_r($this->options);
+            // echo "</pre>";
             ?>
             <div class="wrap">
                

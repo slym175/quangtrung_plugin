@@ -57,10 +57,6 @@ function update_user_online($user_id, $last_time_after)
 	global $wpdb;
 	$table = $wpdb->prefix . 'dangkynhanqua';
 	$rows = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE user_id = %d AND status = 0", $user_id ) );
-
-	$log->log( 'demo-log-divide', '---------------------------------------------------<br>----------------------------------------------------------');
-	$log->log( 'demo-log-rows', print_r( date('Y-m-d H:i:s', $rows->last_online), true ) );
-
 	$times = get_qt_options('daily_login_time') != null ? explode(',', trim(get_qt_options('daily_login_time'))) : null;
 
 	$log->log( 'demo-log-times', print_r( $times, true ) );
@@ -79,28 +75,69 @@ function update_user_online($user_id, $last_time_after)
 			// $log->log( 'demo-log-last_time_after', print_r( date('Y-m-d H:i:s', $last_time_after), true ) );
 
 			if($last_time_after > $from && $last_time_after < $to && $rows && ($rows->last_online < $from || $rows->last_online > $to)) {
-				$log->log( 'demo-log-true', print_r( $user_id, true ) );
-				$old_times_online = (array) $rows->times_online;
+				// $log->log( 'demo-log-true', print_r( $user_id, true ) );
+				$old_times_online = (array) json_decode($rows->times_online);
 				$new_times_online = array();
 				$new_times_online[date('d-m-Y', time())] = $old_times_online[date('d-m-Y', time())] ? $old_times_online[date('d-m-Y', time())] + 1 : 1;
 				$times_online = array_merge($old_times_online, $new_times_online);
+
+				// $log->log( 'old_times_online', print_r( $old_times_online, true ) );
+				// $log->log( 'new_times_online', print_r( $new_times_online, true ) );
+				// $log->log( 'times_online', print_r( $times_online, true ) );
+				
 				$wpdb->update( 
 					$table, 
 					array( 
-						'last_online' 	=> $last_time_after,   // string
-						'times_online' 	=> maybe_serialize($times_online)    // integer (number) 
+						'last_online' 	=> $last_time_after, 
+						'times_online' 	=> json_encode($times_online) 
 					), 
 					array( 'id' => $rows->id ), 
 					array( 
-						'%d',   // value1
-						'%s'    // value2
+						'%d', 
+						'%s'
 					), 
 					array( '%d' ) 
 				);
-				$log->log( 'demo-log-true', print_r( $new_times_online, true ) );
-			}else{
-				$log->log( 'demo-log-false', print_r( $rows, true ) );
+
+				if(checkGiftCondition($rows)) {
+					$wpdb->update( 
+						$table, 
+						array( 
+							'status' => 1, 
+						), 
+						array( 'id' => $rows->id ), 
+						array( 
+							'%d', 
+						), 
+						array( '%d' ) 
+					);
+				}
+
+				// $log->log( 'demo-log-true', print_r( $new_times_online, true ) );
 			}
 		}
 	}
+}
+
+function checkGiftCondition($gift)
+{
+    $min_date = get_post_meta( $gift->product_id, 'so_ngay_dang_nhap', true);
+    $online_times = get_post_meta( $gift->product_id, 'so_lan_trong_ngay', true);
+
+	$array_rg = json_decode($gift->times_online);
+	$date = 0;
+
+	if(isset($array_rg) && is_array($array_rg)) {
+		foreach($array_rg as $value) {
+			if($value >= $online_times) {
+				$date++;
+			}
+		}
+	}
+
+	if($date <= $min_date) {
+		return true;
+	}
+
+	return false;
 }

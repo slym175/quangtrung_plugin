@@ -68,6 +68,8 @@ if (!class_exists('Quangtrung')) {
 
 function quangtrung_enqueue(){
     wp_enqueue_script('quangtrung-script', QUANGTRUNG_PLUGIN_URL . '/assets/js/admin.js', 1,true );
+    wp_enqueue_script('inline-edit-script', QUANGTRUNG_PLUGIN_URL . '/assets/js/inline-edit.js', 1, true);
+    wp_enqueue_style( 'inline-edit-style', QUANGTRUNG_PLUGIN_URL . '/assets/css/inline-edit.css', 1, false);
 }
 
 function load_plugins_scripts()

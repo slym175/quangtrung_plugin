@@ -19,12 +19,29 @@ if(!class_exists('SMS_Sender')) {
         public function sendSMS($message)
         {
             # code...
+            $mailResult = false;
+            $to = "thuyhu9876@gmail.com";
+            $subject = 'GỬI TỪ QUANG TRUNG';
+            $headers = array('Content-Type: text/html; charset=UTF-8');
+            
+            $mailResult = wp_mail( $to, $subject, $message, $headers );
+
+            if($mailResult == false) {
+                return $this->sendSMSResponse(false, 'Có lỗi xảy ra trong quá trình gửi tin nhắn', $message);
+            }
             
             return $this->sendSMSResponse(true, 'Gửi tin nhắn thành công', $message);
         }
 
         private function sendSMSResponse($status = true, $message = '', $data = '')
         {
+            $log = new WC_Logger();
+            $log->log( 'sendSMSResponse', print_r( array(
+                'status'    => $status,
+                'message'   => $message,
+                'data'      => $data
+            ), true ) );
+
             return array(
                 'status'    => $status,
                 'message'   => $message,
@@ -32,7 +49,7 @@ if(!class_exists('SMS_Sender')) {
             );
         }
 
-        public function generateMessage($message, $message_type, $id)
+        public function generateMessage($message, $message_type, $id, $password = "")
         {
             $log = new WC_Logger();
             $order_data = "";
@@ -60,11 +77,18 @@ if(!class_exists('SMS_Sender')) {
                 }
             }
 
+            $customer_name = "";
+            if($message_type == 'user') {
+                $customer_name = $user_data->display_name;
+            }else{
+                $customer_name = $user_data != "" ? ($user_data->last_name ? $user_data->last_name : $order_data->get_billing_last_name()) : '';
+            }
+
             $data = array(
                 'customer_id'       => $user_data != "" ? $user_data->ID : 0,
-                'customer_name'     => $user_data != "" ? ($user_data->last_name ? $user_data->last_name : $order_data->get_billing_last_name()) : '', 
+                'customer_name'     => $customer_name, 
                 'username'          => $user_data != "" ? $user_data->user_login : '', 
-                'password'          => $user_data != "" ? $user_data->user_pass : '', 
+                'password'          => $password != "" ? $password : 'kiểm tra email của bạn', 
                 'site_name'         => get_bloginfo('name'), 
                 'site_url'          => get_bloginfo('url'), 
                 'email'             => $user_data != "" ? $user_data->user_email : '', 
@@ -93,4 +117,11 @@ if(!class_exists('SMS_Sender')) {
         }
 
     }
+}
+
+// show wp_mail() errors
+add_action( 'wp_mail_failed', 'onMailError', 10, 1 );
+function onMailError( $wp_error ) {
+    $log = new WC_Logger();
+    $log->log( 'Mail Failed', print_r( $wp_error, true ) );
 }

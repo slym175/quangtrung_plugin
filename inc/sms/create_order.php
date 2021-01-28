@@ -10,23 +10,12 @@ function action_woocommerce_new_order( $order_get_id ) {
     
     $log = new WC_Logger();
     $sms = new SMS_Sender();
-    if(get_option('qt_options')['enable_create_user'] && get_option('qt_options')['enable_create_user'] == "on") {
-        $user_created = wc_create_qt_new_customer($order_data['billing_email'], '', '', $order_data['billing_phone'], $order_data['billing_last_name']);
-        if($user_created) {
-            $log->log( 'new-woocommerce-log-name', print_r( $user_created, true ) );
-            if($user_created['data'] && $user_created['data'] != null) {
-                // Do send sms action
-                $message = $sms->generateMessage(get_option('qt_options')['sms_create_user_pattern'], 'user', $user_created['data']);
-                $response = $sms->sendSMS($message);
-                $log->log( 'new-woocommerce-log-name', print_r( $response, true ) );
-            }else{
-                $log->log( 'new-woocommerce-log-name', 'Account\'s not created! Maybe, you had one.' );
-            }
-        }
+    if(get_qt_options('enable_create_user') && get_qt_options('enable_create_user') == "on") {
+        wc_create_qt_new_customer($order_data['billing_email'], '', '', $order_data['billing_phone'], $order_data['billing_last_name']);
     }
 
-    if(get_option( 'qt_options', 'option' )['enable_sms_create_order'] && get_option( 'qt_options', 'option' )['enable_sms_create_order'] == "on") {
-        $message = $sms->generateMessage( get_option('qt_options')['sms_create_order_pattern'], 'order', $order_get_id );
+    if(get_qt_options('enable_sms_create_order') && get_qt_options('enable_sms_create_order') == "on") {
+        $message = $sms->generateMessage( get_qt_options('sms_create_order_pattern'), 'order', $order_get_id );
         $response = $sms->sendSMS( $message );
         $log->log( 'new-woocommerce-log-name', print_r( $response, true ) );
     }

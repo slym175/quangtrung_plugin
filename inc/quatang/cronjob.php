@@ -44,8 +44,8 @@ function run_qua_bao_hanh_cron() {
         $date1 = new DateTime(); $date1->format('m/d/Y');
         $date2 = new DateTime(date('m/d/Y', $bh->created_at)); $date2->format('m/d/Y');
         $diff = $date1->diff($date2);
-        if($diff->m >= $bh_time || $diff->m >= $min_time) {
-            $list_bh[$i] = $bh['bh_code'];
+        if(($diff->m >= $bh_time || $diff->m >= $min_time) && $bh->recieved_gift == 0) {
+            $list_bh[$i] = $bh->bh_code;
             $i++;
         }
     }
@@ -54,6 +54,7 @@ function run_qua_bao_hanh_cron() {
 
     $log = new WC_Logger();
     $log->log( 'new-cronjob-name', 'Cronjob daily!!!' );
+    $log->log( 'list:', $strr );
 
     $update_sql = "UPDATE $table_baohanh SET recieved_gift = 1 WHERE bh_code IN $strr";
     $baohanh = $wpdb->query( 

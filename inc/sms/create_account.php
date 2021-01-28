@@ -108,4 +108,15 @@ function wc_create_qt_new_customer( $email, $username = '', $password = '', $pho
         'data'      => $customer_id
     );; 
 } 
+
+function sms_registration_save( $user_id ) {
+    $log = new WC_Logger();
+    $sms = new SMS_Sender();
+    $password = isset($_REQUEST['password']) ? 'kiểm tra email của bạn' : "kiểm tra email của bạn";
+    $message = $sms->generateMessage(get_qt_options('sms_create_user_pattern'), 'user', $user_id, $password);
+    $response = $sms->sendSMS($message);
+    $log->log( 'sms_registration_save', print_r( $response, true ) );
+}
+add_action( 'user_register', 'sms_registration_save', 10, 1 );
+
 ?>

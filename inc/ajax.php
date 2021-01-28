@@ -84,3 +84,34 @@ function receive_gift_registration() {
     } 
     
 }
+
+add_action( 'wp_ajax_update_list_registration_gift', 'update_list_registration_gift' );
+add_action( 'wp_ajax_nopriv_update_list_registration_gift', 'update_list_registration_gift' );
+function update_list_registration_gift() {
+ 
+    global $wpdb;
+    $table = $wpdb->prefix . 'dangkynhanqua';
+    //do bên js để dạng json nên giá trị trả về dùng phải encode
+    $id = (isset($_REQUEST['id'])) ? esc_attr($_REQUEST['id']) : '';
+    $status = (isset($_REQUEST['status'])) ? esc_attr($_REQUEST['status']) : '';
+
+    $wpdb->update( 
+        $table, 
+        array( 
+            'status' => intval($status),
+        ), 
+        array( 'id' => $id ), 
+        array( 
+            '%d', 
+        ), 
+        array( '%d' ) 
+    );
+    
+    if($wpdb->last_error !== '') {
+        echo $wpdb->last_error;
+        die();//bắt buộc phải có khi kết thúc
+    }else{
+        echo "Cập nhật thành công.";
+        die;
+    } 
+}

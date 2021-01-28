@@ -1,7 +1,13 @@
 <?php
 // send SMS when order change status to PENDING 
 function action_woocommerce_send_sms_order_pending($order_id) {
-    # code...
+    // $log = new WC_Logger();
+    // if(get_qt_options( 'enable_sms_completed_order' ) && get_qt_options( 'enable_sms_completed_order' ) == "on") {
+    //     $sms = new SMS_Sender();
+    //     $message = $sms->generateMessage( get_qt_options('sms_completed_order_pattern'), 'order', $order_id );
+    //     $response = $sms->sendSMS( $message );
+    //     $log->log( 'action_woocommerce_send_sms_order_pending', print_r( $response, true ) );
+    // }
 }
 add_action( 'woocommerce_order_status_pending', 'action_woocommerce_send_sms_order_pending');
 
@@ -25,12 +31,12 @@ add_action( 'woocommerce_order_status_processing', 'action_woocommerce_send_sms_
    
 // send SMS when order change status to COMPLETED 
 function action_woocommerce_send_sms_order_completed($order_id) {
-    if(get_option( 'enable_sms_completed_order', 'option' ) && get_option( 'enable_sms_completed_order', 'option' ) == "on") {
-        $log = new WC_Logger();
+    $log = new WC_Logger();
+    if(get_qt_options( 'enable_sms_completed_order' ) && get_qt_options( 'enable_sms_completed_order' ) == "on") {
         $sms = new SMS_Sender();
-        $message = $sms->generateMessage( get_option('qt_options')['sms_completed_order_pattern'], 'order', $order_id );
+        $message = $sms->generateMessage( get_qt_options('sms_completed_order_pattern'), 'order', $order_id );
         $response = $sms->sendSMS( $message );
-        $log->log( 'new-woocommerce-log-name', print_r( $response, true ) );
+        $log->log( 'action_woocommerce_send_sms_order_completed', print_r( $response, true ) );
     }
 }
 add_action( 'woocommerce_order_status_completed', 'action_woocommerce_send_sms_order_completed');

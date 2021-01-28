@@ -8,18 +8,18 @@ function qt_shipping_method() {
             public function __construct( $instance_id = 0 ) {
                 $this->instance_id 	        = absint( $instance_id );
                 $this->id                   = 'qt_weight_shipping';//this is the id of our shipping method
-                $this->method_title         = __( 'Weight Shipping', QUANGTRUNG_TEXTDOMAIN );
+                $this->method_title         = __( 'Vận chuyển theo cân nặng', QUANGTRUNG_TEXTDOMAIN );
                 $this->method_description   = __( 'Giao hàng dựa trên cân nặng', QUANGTRUNG_TEXTDOMAIN );
                 //add to shipping zones list
                 $this->supports = array(
                     'shipping-zones',
-                    'settings',
+                    // 'settings',
                     'instance-settings',
                     'instance-settings-modal',
                 );
 
                 $this->enabled = isset($this->settings['enabled']) ? $this->settings['enabled'] : 'yes';
-                $this->title = isset($this->settings['title']) ? $this->settings['title'] : __('Weight Shipping', QUANGTRUNG_TEXTDOMAIN);
+                $this->title = isset($this->settings['title']) ? $this->settings['title'] : __('Vận chuyển theo cân nặng', QUANGTRUNG_TEXTDOMAIN);
 
                 $this->init();
 
@@ -35,22 +35,6 @@ function qt_shipping_method() {
             }
             //Fields for the settings page
             function init_form_fields() {
-
-                //fileds for the setting form fields
-                $this->form_fields = array(
-                    'enabled' => array(
-                        'title'         => __( 'Bật/tắt', QUANGTRUNG_TEXTDOMAIN ),
-                        'type'          => 'checkbox',
-                        'description'   => __( 'Bật tắt phương thức vận chuyển', QUANGTRUNG_TEXTDOMAIN ),
-                        'default'       => 'yes'
-                    ),
-                    'title' => array(
-                        'title'         => __( 'Tiêu đề', QUANGTRUNG_TEXTDOMAIN ),
-                        'type'          => 'text',
-                        'description'   => __( 'Tiêu đề hiển thị trang ngoài', QUANGTRUNG_TEXTDOMAIN ),
-                        'default'       => __( 'Weight Shipping', QUANGTRUNG_TEXTDOMAIN )
-                    ),
-                );
 
                 //fileds for the modal form from the Zones window
                 $this->instance_form_fields = array(
@@ -84,17 +68,9 @@ function qt_shipping_method() {
                     $weight = $weight + $_product->get_weight() * $values['quantity']; 
                 }
  
-                $weight = wc_get_weight( $weight, 'kg' );
- 
-                if( $weight <= 10 ) {
-                    $cost = intval($weight / 10) * $intance_settings['cost'];
-                } elseif( $weight <= 30 ) {
-                    $cost = intval($weight / 10) * $intance_settings['cost'] + 10000;
-                } elseif( $weight <= 50 ) {
-                    $cost = intval($weight / 10) * $intance_settings['cost'] + 20000;
-                } else {
-                    $cost = 0;
-                }
+                $weight = wc_get_weight( $weight, 'kg' , 'kg');
+
+                $cost = $weight * $intance_settings['cost'];
 
                 // Register the rate
                 $this->add_rate( array(
