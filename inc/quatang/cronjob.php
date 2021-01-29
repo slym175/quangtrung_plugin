@@ -1,17 +1,7 @@
 <?php
-
 function qt_deactivate() {
-    wp_clear_scheduled_hook( 'svd_cron' );
+    wp_clear_scheduled_hook( 'check_qua_bao_hanh_cron' );
 }
- 
-add_action('init', function() {
-    add_action( 'check_qua_bao_hanh_cron', 'run_qua_bao_hanh_cron' );
-    register_deactivation_hook( __FILE__, 'qt_deactivate' );
- 
-    if (! wp_next_scheduled ( 'check_qua_bao_hanh_cron' )) {
-        wp_schedule_event( time(), 'daily', 'check_qua_bao_hanh_cron' );
-    }
-});
  
 function run_qua_bao_hanh_cron() {
     global $wpdb;
@@ -34,7 +24,10 @@ function run_qua_bao_hanh_cron() {
             AND {$table_baohanh}.recieved_gift = '0'
             AND {$table_baohanh_items}.bh_code IS NULL
         ORDER BY {$table_baohanh}.bh_code
-    SQL;
+SQL;
+    // closing identifier should not be indented, although it might look ugly
+    // ... omitted
+    
     $baohanh = $wpdb->get_results($sql);
 
     $list_bh = array();
@@ -51,15 +44,17 @@ function run_qua_bao_hanh_cron() {
     }
 
     $strr = "(". implode(',', $list_bh) .")";
-
-    $log = new WC_Logger();
-    $log->log( 'new-cronjob-name', 'Cronjob daily!!!' );
-    $log->log( 'list:', $strr );
-
     $update_sql = "UPDATE $table_baohanh SET recieved_gift = 1 WHERE bh_code IN $strr";
-    $baohanh = $wpdb->query( 
-        $wpdb->prepare( $update_sql )
-    );
-    // $log->log( 'new-cronjob-name', 'SQL: '. $sql);
-    // $log->log( 'new-cronjob-name', print_r($baohanh, true) );
+    $wpdb->query( $wpdb->prepare($update_sql) );
 }
+
+add_action('init', function() {
+    add_action( 'check_qua_bao_hanh_cron', 'run_qua_bao_hanh_cron' );
+    register_deactivation_hook( __FILE__, 'qt_deactivate' );
+ 
+    if (! wp_next_scheduled( 'check_qua_bao_hanh_cron' )) {
+        wp_schedule_event( time(), 'daily', 'check_qua_bao_hanh_cron' );
+    }
+});
+
+?>

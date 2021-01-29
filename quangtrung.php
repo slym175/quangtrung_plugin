@@ -130,17 +130,18 @@ function get_type_time_bh($type){
     return '';
 }
 
-function contactform7_before_send_mail( $form_to_DB ) {
+function custom_contactform7_before_send_mail( $form_to_DB ) {
     //set your db details
     global $wpdb;
     $table = $wpdb->prefix.'hoidap';
 
     if($form_to_DB && $form_to_DB->id == 4704) {     
+        $currentformInstance = WPCF7_ContactForm::get_current();
         $submission = WPCF7_Submission::get_instance();
         $data =& $submission->get_posted_data();
         $link =& $submission->get_meta('url');
         
-        $data = array(
+        $insert_data = array(
             'name'          => $data['your-name'],
             'phone'         => $data['your-phone'],
             'email'         => $data['your-email'],
@@ -149,16 +150,30 @@ function contactform7_before_send_mail( $form_to_DB ) {
             'link'          => $link,
         );
         $format = array('%s', '%s', '%s', '%s', '%s', '%s', '%s');
-        $result_check = $wpdb->insert($table, $data, $format);     
-        
-        if($result_check) {
-            return 1;
-        }else{
-            return 0;
+        $wpdb->insert($table, $insert_data, $format);     
+
+        $mail_cc = "";
+        if($data['your-question-type'][0] == "Câu hỏi kỹ thuật") {
+            $mail_cc = get_qt_options('tech_staff_email');
         }
+        if($data['your-question-type'][0] == "Câu hỏi thông thường"){
+            $mail_cc = get_qt_options('cskh_staff_email');
+        }
+
+        $mail = $currentformInstance->prop('mail');
+        if($mail_cc != "") {
+            $mail['additional_headers'] = "Cc: $mail_cc";
+        }
+        
+        $currentformInstance->set_properties(array(
+            "mail" => $mail
+        ));
+
+        return $currentformInstance;
     }    
+    return $form_to_DB;
 }
-add_action( 'wpcf7_before_send_mail', 'contactform7_before_send_mail' );
+add_action( 'wpcf7_before_send_mail', 'custom_contactform7_before_send_mail' );
 
 add_filter("wpdiscuz_custom_field_text", function ($value, $args) {
     // $value .= print_r($args);

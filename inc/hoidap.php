@@ -43,6 +43,14 @@ class Questions_List extends WP_List_Table
         $sql = "SELECT * FROM {$wpdb->prefix}hoidap";
 
         $s = $_REQUEST['s'];
+        $question_types = $_REQUEST['question_types'];
+        if(isset($s) && $s){
+            $sql .= ' where question_type LIKE "%'.$s.'%"';
+        }else if(isset($question_types) && $question_types){
+            $sql .= ' where question_type LIKE "%'.$s.'%"';
+        }
+
+        
         if(isset($s) && $s){
             $sql .= ' where question_type LIKE "%'.$s.'%"';
         }

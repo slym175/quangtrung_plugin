@@ -387,6 +387,53 @@ if(!class_exists("GsSettingsPage")) {
                     )
                 ) // Callback Arguments          
             );
+
+            add_settings_section(
+                'gt_ask_questions_setting_section', // ID
+                'Email câu hỏi', // Title
+                '', // Callback
+                'qt-settings' // Page
+            );
+
+            add_settings_field(
+                'tech_staff_email', // ID
+                'Nhân viên kỹ thuật', // Title 
+                array( $this, 'gs_render_settings_field' ), // Callback
+                'qt-settings', // Page
+                'gt_ask_questions_setting_section', // Section 
+                array (
+                    'parent'        => 'qt_options', // Option name
+                    'id'            => 'tech_staff_email', // Field ID
+                    'class'         => 'regular-text one-line', // Field ID
+                    'type'          => 'textarea', // Field Type
+                    'subtype'       => 'text', // Field Subtype
+                    'name'          => 'tech_staff_email', // Field Name
+                    'description'   => __('Email của nhân viên kỹ thuật. VD tech_staff1@mail.com, tech_staff2@mail.com, ...', QUANGTRUNG_TEXTDOMAIN),
+                    'options'       => array(
+                        'rows'      => 3,
+                    )
+                ) // Callback Arguments          
+            );
+
+            add_settings_field(
+                'cskh_staff_email', // ID
+                'Chăm sóc khách hàng', // Title 
+                array( $this, 'gs_render_settings_field' ), // Callback
+                'qt-settings', // Page
+                'gt_ask_questions_setting_section', // Section 
+                array (
+                    'parent'        => 'qt_options', // Option name
+                    'id'            => 'cskh_staff_email', // Field ID
+                    'class'         => 'regular-text one-line', // Field ID
+                    'type'          => 'textarea', // Field Type
+                    'subtype'       => 'text', // Field Subtype
+                    'name'          => 'cskh_staff_email', // Field Name
+                    'description'   => __('Email của nhân viên chăm sóc khách hàng. VD customer_care1@mail.com, customer_care2@mail.com, ...', QUANGTRUNG_TEXTDOMAIN),
+                    'options'       => array(
+                        'rows'      => 3,
+                    )
+                ) // Callback Arguments          
+            );
             
         }
 
@@ -459,7 +506,7 @@ if(!class_exists("GsSettingsPage")) {
                             $args['id'],
                             $field_name,
                             sanitize_text_field( isset( $this->options[$args['id']] ) ? esc_attr( $this->options[$args['id']]) : '' ),
-                            $field_options,
+                            $field_options
                         );
                         printf('<p>%1$s</p>', $args['description']);
                     }

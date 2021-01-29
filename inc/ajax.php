@@ -55,28 +55,22 @@ function receive_gift_registration() {
             }
         }
     }
-    $wpdb->insert( 
-        $table, 
-        array( 
-            'user_id'       => intval($user),
-            'product_id'    => intval($product),
-            'status'        => 0,
-            'created_at'    => time(),
-            'last_online'   => time(),
-            'times_online'  => serialize(array())
-        ), 
-        array( 
-            '%d', 
-            '%d', 
-            '%d', 
-            '%d', 
-        ), 
+
+    $data = array(
+        'user_id'       => intval($user),
+        'product_id'    => intval($product),
+        'status'        => 0,
+        'created_at'    => time(),
+        'last_online'   => time(),
+        'times_online'  => json_encode(serialize(array()))
     );
+    $format = array('%d', '%d', '%d', '%d', '%s');
+
+    $wpdb->insert( $table, $data, $format );
         
     if($wpdb->last_error !== '') {
         echo $wpdb->last_error;
-            
-        die();//bắt buộc phải có khi kết thúc
+        die;//bắt buộc phải có khi kết thúc
     }else{
         echo "Đăng ký nhận quà thành công.";
         die;

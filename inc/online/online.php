@@ -49,7 +49,7 @@ function gearside_user_last_online($id){
 
 function update_user_online($user_id, $last_time_after)
 {
-	$log = new WC_Logger();
+	// $log = new WC_Logger();
 	if($user_id == 0) {
 		return;
 	}
@@ -59,7 +59,7 @@ function update_user_online($user_id, $last_time_after)
 	$rows = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE user_id = %d AND status = 0", $user_id ) );
 	$times = get_qt_options('daily_login_time') != null ? explode(',', trim(get_qt_options('daily_login_time'))) : null;
 
-	$log->log( 'demo-log-times', print_r( $times, true ) );
+	// $log->log( 'demo-log-times', print_r( $times, true ) );
 
 	if(is_array($times) && isset($times)) {
 		foreach($times as $timee) {
@@ -78,7 +78,10 @@ function update_user_online($user_id, $last_time_after)
 				// $log->log( 'demo-log-true', print_r( $user_id, true ) );
 				$old_times_online = (array) json_decode($rows->times_online);
 				$new_times_online = array();
-				$new_times_online[date('d-m-Y', time())] = $old_times_online[date('d-m-Y', time())] ? $old_times_online[date('d-m-Y', time())] + 1 : 1;
+				if(isset($old_times_online[date('d-m-Y', time())]) && $old_times_online[date('d-m-Y', time())]) {
+					$old_times_online[date('d-m-Y', time())] = 0;
+				}
+				$new_times_online[date('d-m-Y', time())] = $old_times_online[date('d-m-Y', time())] + 1;
 				$times_online = array_merge($old_times_online, $new_times_online);
 
 				// $log->log( 'old_times_online', print_r( $old_times_online, true ) );
